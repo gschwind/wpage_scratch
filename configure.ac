@@ -65,6 +65,13 @@ PKG_CHECK_MODULES(PANGO, pangocairo >= 0.28)
 AC_SUBST(PANGO_CFLAGS)
 AC_SUBST(PANGO_LIBS)
 
+PKG_CHECK_MODULES(WESTON, weston >= 1.9.0)
+AC_SUBST(WESTON_CFLAGS)
+AC_SUBST(WESTON_LIBS)
+
+PKG_CHECK_MODULES(WAYLAND, wayland-server >= 1.9.0)
+AC_SUBST(WAYLAND_CFLAGS)
+AC_SUBST(WAYLAND_LIBS)
 
 dnl This adds the option of compiling without using the ctemplate library,
 dnl which has proved troublesome for compilation on some platforms
@@ -139,8 +146,6 @@ unset safe_CXXFLAGS
 unset safe_LDFLAGS
 
 AC_CONFIG_FILES([
-  page.conf
-  page.desktop
   Makefile
   src/Makefile
   ])
