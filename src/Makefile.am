@@ -1,4 +1,4 @@
-bin_PROGRAMS = page 
+bin_PROGRAMS = wpage 
 
 AM_CXXFLAGS =  \
 	-std=c++11 \
@@ -14,12 +14,13 @@ AM_CXXFLAGS =  \
 	$(CAIRO_CFLAGS) \
 	$(PANGO_CFLAGS) \
 	$(GLIB_CFLAGS) \
+	$(WESTON_CFLAGS) \
 	-fno-strict-aliasing
 
-page_SOURCES = \
+wpage_SOURCES = \
 	main.cxx 
 
-page_LDADD = \
+wpage_LDADD = \
 	$(X11_LIBS) \
 	$(XCB_LIBS) \
 	$(X11XCB_LIBS) \
@@ -31,6 +32,7 @@ page_LDADD = \
 	$(CAIRO_LIBS) \
 	$(PANGO_LIBS) \
 	$(GLIB_LIBS) \
+	$(WESTON_LIBS) \
 	$(RT_LIBS) 
 
 
