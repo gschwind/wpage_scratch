@@ -17,8 +17,13 @@ AM_CXXFLAGS =  \
 	$(WESTON_CFLAGS) \
 	-fno-strict-aliasing
 
+BUILT_SOURCES = \
+	xdg-shell-server-protocol.h
+
 wpage_SOURCES = \
-	main.cxx 
+	main.cxx \
+	xdg-shell-protocol.c \
+	xdg-shell-server-protocol.h
 
 wpage_LDADD = \
 	$(X11_LIBS) \
@@ -35,4 +40,12 @@ wpage_LDADD = \
 	$(WESTON_LIBS) \
 	$(RT_LIBS) 
 
+%-protocol.c : $(top_srcdir)/protocol/%.xml
+	$(wayland_scanner) code < $< > $@
+
+%-server-protocol.h : $(top_srcdir)/protocol/%.xml
+	$(wayland_scanner) server-header < $< > $@
+
+%-client-protocol.h : $(top_srcdir)/protocol/%.xml
+	$(wayland_scanner) client-header < $< > $@
 

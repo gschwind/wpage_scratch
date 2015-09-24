@@ -2,9 +2,11 @@
 AC_INIT([wpage], [0.0.1])
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_INIT_AUTOMAKE([-Wall -Werror])
+AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_SRCDIR([src/main.cxx])
 AC_CONFIG_HEADERS([src/config.hxx])
+
+CHECK_GNU_MAKE
 
 dnl define custom macro to setup dir from datadir
 
@@ -130,6 +132,12 @@ AC_CHECK_LIB(rt, clock_gettime,
 AC_SUBST(RT_LIBS)
 
 AC_DEFINE_DIR([DATA_DIR], [datadir], [Data directory (/usr/share)])
+
+AC_PATH_PROG([wayland_scanner], [wayland-scanner], [wayland-scanner])
+if test x$wayland_scanner = x; then
+	PKG_CHECK_MODULES(WAYLAND_SCANNER, [wayland-scanner])
+	wayland_scanner=`$PKG_CONFIG --variable=wayland_scanner wayland-scanner`
+fi
 
 safe_CXXFLAGS="${CXXFLAGS}"
 safe_LDFLAGS="${LDFLAGS}"
