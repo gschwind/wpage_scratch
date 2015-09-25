@@ -27,7 +27,11 @@ shell_surface_configure(struct weston_surface * s, int32_t x , int32_t y) {
 	weston_log("call %s\n", __PRETTY_FUNCTION__);
 	weston_log("s = %p, x = %d, y = %d\n", s, x, y);
 
-	auto sh = reinterpret_cast<xdg_shell_t*>(s->configure_private);
+	auto sh = reinterpret_cast<xdg_surface_t*>(s->configure_private);
+
+	weston_seat * seat;
+	wl_list_for_each(seat, &sh->shell->cmp->wcmp->seat_list, link)
+		weston_surface_activate(s, seat);
 
 	if(s->output != nullptr)
 		weston_output_schedule_repaint(s->output);

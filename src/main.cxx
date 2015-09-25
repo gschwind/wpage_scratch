@@ -108,8 +108,9 @@ int main(int argc, char ** argv) {
 	weston_compositor_xkb_init(cmp.wcmp, &names);
 
 	/* define x1 backend configuration */
-	weston_x11_backend_config conf = { { }, 0 };
+	weston_x11_backend_config conf;
 	conf.use_pixman = 0;
+	conf.no_input = 0;
 
 	/* initialize the x11-backend */
 	weston_compositor_init_backend(cmp.wcmp, "x11-backend.so", &conf.base);
