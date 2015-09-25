@@ -25,6 +25,7 @@ wpage_SOURCES = \
 	compositor.cxx \
 	xdg_shell.cxx \
 	xdg_surface.cxx \
+	xdg_popup.cxx \
 	xdg-shell-protocol.c \
 	xdg-shell-server-protocol.h
 
