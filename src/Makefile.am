@@ -22,6 +22,9 @@ BUILT_SOURCES = \
 
 wpage_SOURCES = \
 	main.cxx \
+	compositor.cxx \
+	xdg_shell.cxx \
+	xdg_surface.cxx \
 	xdg-shell-protocol.c \
 	xdg-shell-server-protocol.h
 
