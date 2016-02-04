@@ -152,6 +152,21 @@ int main(int argc, char ** argv) {
 				  &cmp, bind_xdg_shell) == NULL)
 		return -1;
 
+	/** create the solid color background **/
+	auto background = weston_surface_create(cmp.wcmp);
+	weston_surface_set_color(background, 0.5, 0.5, 0.5, 1.0);
+    weston_surface_set_size(background, 800, 600);
+    pixman_region32_fini(&background->opaque);
+    pixman_region32_init_rect(&background->opaque, 0, 0, 800, 600);
+    weston_surface_damage(background);
+    //pixman_region32_fini(&s->input);
+    //pixman_region32_init_rect(&s->input, 0, 0, w, h);
+
+    auto bview = weston_view_create(background);
+	weston_view_set_position(bview, 0, 0);
+	background->timeline.force_refresh = 1;
+	weston_layer_entry_insert(&cmp.default_layer.view_list, &bview->layer_link);
+
     wl_display_run(dpy);
 
 }
