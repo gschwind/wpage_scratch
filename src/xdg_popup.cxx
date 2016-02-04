@@ -34,7 +34,7 @@ shell_popup_configure(struct weston_surface * s, int32_t x , int32_t y) {
 	weston_log("call %s\n", __PRETTY_FUNCTION__);
 	weston_log("s = %p, x = %d, y = %d\n", s, x, y);
 
-	auto sh = reinterpret_cast<xdg_shell_t*>(s->configure_private);
+	auto sh = reinterpret_cast<xdg_popup_t*>(s->configure_private);
 
 	if(s->output != nullptr)
 		weston_output_schedule_repaint(s->output);
@@ -46,11 +46,14 @@ xdg_popup_delete(struct wl_resource *resource)
 	delete xdg_popup_t::get(resource);
 }
 
-xdg_popup_t::xdg_popup_t(wl_client *client, xdg_shell_t * shell, uint32_t id, weston_surface * surface) :
+xdg_popup_t::xdg_popup_t(wl_client *client, xdg_shell_t * shell, uint32_t id,
+		weston_surface * surface, int32_t x, int32_t y) :
 		client{client},
 		shell{shell},
 		id{id},
-		surface{surface}
+		surface{surface},
+		ox{x},
+		oy{y}
 {
 
 	resource = wl_resource_create(client, &xdg_surface_interface, 1, id);
@@ -71,7 +74,7 @@ xdg_popup_t::xdg_popup_t(wl_client *client, xdg_shell_t * shell, uint32_t id, we
 	surface->output = output;
 
 	view = weston_view_create(surface);
-	weston_view_set_position(view, 0, 0);
+	weston_view_set_position(view, ox, oy);
 	surface->timeline.force_refresh = 1;
 	weston_layer_entry_insert(&shell->cmp->default_layer.view_list, &view->layer_link);
 

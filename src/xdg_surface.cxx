@@ -18,6 +18,68 @@ using namespace std;
 
 extern const struct xdg_surface_interface xdg_surface_implementation;
 
+
+static void
+move_grab_motion(struct weston_pointer_grab *grab,
+		uint32_t time,
+		wl_fixed_t x,
+		wl_fixed_t y)
+{
+	struct weston_pointer *pointer = grab->pointer;
+
+	weston_log("motion %f, %f\n",
+			wl_fixed_to_double(grab->pointer->grab_x),
+			wl_fixed_to_double(grab->pointer->grab_y));
+
+	float fx = wl_fixed_to_double(x);
+	float fy = wl_fixed_to_double(y);
+
+	weston_log("xy %f, %f\n",
+			wl_fixed_to_double(x),
+			wl_fixed_to_double(y));
+
+	weston_pointer_move(pointer, x, y);
+
+	/** TODO: relative move **/
+	weston_view_set_position(grab->pointer->focus, fx, fy);
+	weston_compositor_schedule_repaint(grab->pointer->focus->surface->compositor);
+}
+
+static void
+move_grab_button(struct weston_pointer_grab *grab,
+		 uint32_t time, uint32_t button, uint32_t state_w)
+{
+	struct weston_pointer *pointer = grab->pointer;
+
+	grab->pointer->focus;
+	weston_log("move %f, %f\n",
+			wl_fixed_to_double(grab->pointer->grab_x),
+			wl_fixed_to_double(grab->pointer->grab_y));
+
+	if (pointer->button_count == 0 &&
+			state_w == WL_POINTER_BUTTON_STATE_RELEASED) {
+		weston_pointer_end_grab(grab->pointer);
+	}
+}
+
+static void
+move_grab_cancel(struct weston_pointer_grab *grab)
+{
+	weston_pointer_end_grab(grab->pointer);
+}
+
+static void
+move_grab_focus(struct weston_pointer_grab *grab)
+{
+
+}
+
+static const struct weston_pointer_grab_interface move_grab_interface = {
+	move_grab_focus,
+	move_grab_motion,
+	move_grab_button,
+	move_grab_cancel,
+};
 xdg_surface_t * xdg_surface_t::get(wl_resource * resource) {
 	return reinterpret_cast<xdg_surface_t*>(wl_resource_get_user_data(resource));
 }
@@ -52,7 +114,8 @@ xdg_surface_t::xdg_surface_t(wl_client *client, xdg_shell_t * shell, uint32_t id
 {
 
 	resource = wl_resource_create(client, &xdg_surface_interface, 1, id);
-	wl_resource_set_implementation(resource, &xdg_surface_implementation, this, xdg_surface_delete);
+	wl_resource_set_implementation(resource, &xdg_surface_implementation,
+			this, xdg_surface_delete);
 
 	/** tell weston how to use this data **/
 	if (weston_surface_set_role(surface, "xdg_surface",
@@ -73,7 +136,13 @@ xdg_surface_t::xdg_surface_t(wl_client *client, xdg_shell_t * shell, uint32_t id
 	surface->timeline.force_refresh = 1;
 	weston_layer_entry_insert(&shell->cmp->default_layer.view_list, &view->layer_link);
 
-	//view->output = output;
+	wl_array array;
+	wl_array_init(&array);
+	wl_array_add(&array, sizeof(uint32_t)*2);
+	((uint32_t*)array.data)[0] = XDG_SURFACE_STATE_MAXIMIZED;
+	((uint32_t*)array.data)[1] = XDG_SURFACE_STATE_ACTIVATED;
+	xdg_surface_send_configure(resource, 300, 300, &array, 10);
+	wl_array_release(&array);
 
 	weston_view_geometry_dirty(view);
 
@@ -125,7 +194,15 @@ static void
 xdg_surface_move(struct wl_client *client, struct wl_resource *resource,
 		 struct wl_resource *seat_resource, uint32_t serial)
 {
+	/* only one grab at time ? */
+	static weston_pointer_grab grab_data{&move_grab_interface, nullptr};
+
 	weston_log("call %s\n", __PRETTY_FUNCTION__);
+	auto xdg_surface = xdg_surface_t::get(resource);
+	auto seat = reinterpret_cast<weston_seat*>(wl_resource_get_user_data(seat_resource));
+
+	weston_pointer_start_grab(seat->pointer, &grab_data);
+
 }
 
 static void
@@ -207,6 +284,8 @@ const struct xdg_surface_interface xdg_surface_implementation = {
 	xdg_surface_unset_fullscreen,
 	xdg_surface_set_minimized,
 };
+
+
 
 }
 

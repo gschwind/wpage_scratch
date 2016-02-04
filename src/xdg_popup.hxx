@@ -31,7 +31,10 @@ struct xdg_popup_t {
 	wl_resource * resource;
 	weston_view * view;
 
-	xdg_popup_t(wl_client *client, xdg_shell_t * shell, uint32_t id, weston_surface * surface);
+	int32_t ox, oy;
+
+	xdg_popup_t(wl_client *client, xdg_shell_t * shell,
+			uint32_t id, weston_surface * surface, int32_t x, int32_t y);
 
 	static xdg_popup_t * get(wl_resource * resource);
 

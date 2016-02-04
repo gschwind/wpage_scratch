@@ -120,7 +120,7 @@ int main(int argc, char ** argv) {
 	weston_output * output = cmp.wcmp->backend->create_output(cmp.wcmp, NULL, &output_config.base);
 
     wl_signal_add(&output->frame_signal, &ocbk.frame);
-    ocbk.frame.notify = [](wl_listener *l, void *data) { weston_log("output.frame\n"); };
+    ocbk.frame.notify = [](wl_listener *l, void *data) { /*weston_log("output.frame\n");*/ };
 
     wl_signal_add(&output->destroy_signal, &ocbk.destroy);
     ocbk.destroy.notify = [](wl_listener *l, void *data) { weston_log("output.destroy\n"); };
