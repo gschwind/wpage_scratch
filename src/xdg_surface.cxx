@@ -201,6 +201,10 @@ xdg_surface_move(struct wl_client *client, struct wl_resource *resource,
 	auto xdg_surface = xdg_surface_t::get(resource);
 	auto seat = reinterpret_cast<weston_seat*>(wl_resource_get_user_data(seat_resource));
 
+	wl_list_remove(&(xdg_surface->view->layer_link.link));
+	wl_list_insert(&(xdg_surface->shell->cmp->default_layer.view_list.link),
+			&(xdg_surface->view->layer_link.link));
+
 	weston_pointer_start_grab(seat->pointer, &grab_data);
 
 }
